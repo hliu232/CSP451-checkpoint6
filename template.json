@@ -70,14 +70,13 @@
                 },
                 "networkProfile": {
                     "networkInterfaces": [
-                        {
-                            "id": "[parameters('networkInterfaces_myvm189_externalid')]",
-                            "properties": {
-                                "deleteOption": "Detach"
+                            {
+                                "id": "[resourceId('Microsoft.Network/networkInterfaces', 'myNewNIC')]"
                             }
-                        }
-                    ]
-                }
+                        ]
+                    }
+
+                
             }
         }
     ]
