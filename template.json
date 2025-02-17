@@ -1,90 +1,92 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "virtualMachines_MywindoewsWebserver_name": {
-            "defaultValue": "MywindoewsWebserver",
-            "type": "String"
-        },
-        "disks_MywindoewsWebserver_disk1_1807300d52d4437cb6e5e88b82f9bfd7_externalid": {
-            "defaultValue": "/subscriptions/71d310bf-1718-4d11-87d1-99a7d4e2053f/resourceGroups/Student-RG-1569858/providers/Microsoft.Compute/disks/MywindoewsWebserver_disk1_1807300d52d4437cb6e5e88b82f9bfd7",
-            "type": "String"
-        },
-        "networkInterfaces_mywindoewswebserver398_externalid": {
-            "defaultValue": "/subscriptions/71d310bf-1718-4d11-87d1-99a7d4e2053f/resourceGroups/Student-RG-1569858/providers/Microsoft.Network/networkInterfaces/mywindoewswebserver398",
-            "type": "String"
-        }
-    },
-    "variables": {},
+    "$schema": "https://schema.management.azure.com/schemas/2019-04- 01/deploymentTemplate.json#", 
+    "contentVersion": "1.0.0.0", 
+    "parameters": { 
+        "vmName": { 
+            "type": "string", 
+            "defaultValue": "myVM", 
+            "metadata": { 
+                "description": "Name of the Virtual Machine."
+                        } 
+                 }, 
+    "adminUsername": { 
+        "type": "string", 
+        "metadata": { 
+            "description": "Admin username for the VM." 
+                    } 
+                }, 
+            "adminPassword": { 
+                "type": "secureString", 
+                "metadata": {
+                    "description": "Admin password for the VM." 
+                        }
+                    } 
+                }, 
     "resources": [
         {
-            "type": "Microsoft.Compute/virtualMachines",
-            "apiVersion": "2024-07-01",
-            "name": "[parameters('virtualMachines_MywindoewsWebserver_name')]",
-            "location": "canadacentral",
-            "tags": {
-                "DeploymentId": "1569858",
-                "LaunchId": "47902",
-                "LaunchType": "ON_DEMAND_LAB",
-                "TemplateId": "7633",
-                "TenantId": "353"
-            },
-            "properties": {
-                "hardwareProfile": {
-                    "vmSize": "Standard_B2s"
-                },
-                "additionalCapabilities": {
-                    "hibernationEnabled": false
-                },
-                "storageProfile": {
-                    "imageReference": {
-                        "publisher": "MicrosoftWindowsServer",
-                        "offer": "WindowsServer",
-                        "sku": "2022-datacenter-azure-edition",
+            "type": "Microsoft.Compute/virtualMachines", 
+            "apiVersion": "2021-03-01", 
+            "name": "[parameters('vmName')]", 
+            "location": "[resourceGroup().location]", 
+            "properties": { 
+                "hardwareProfile": { 
+                    "vmSize": "Standard_DS1_v2" 
+                    }, 
+                "osProfile": { 
+                    "computerName": "[parameters('vmName')]", 
+                    "adminUsername": "[parameters('adminUsername')]", 
+                    "adminPassword": "[parameters('adminPassword')]" 
+                    }, 
+                "storageProfile": { 
+                    "imageReference": { 
+                        "publisher": "Canonical", 
+                        "offer": "UbuntuServer", 
+                        "sku": "18.04-LTS", 
                         "version": "latest"
-                    },
+                        }, 
                     "osDisk": {
-                        "osType": "Windows",
-                        "name": "[concat(parameters('virtualMachines_MywindoewsWebserver_name'), '_disk1_1807300d52d4437cb6e5e88b82f9bfd7')]",
-                        "createOption": "FromImage",
-                        "caching": "ReadWrite",
-                        "managedDisk": {
-                            "storageAccountType": "StandardSSD_LRS",
-                            "id": "[parameters('disks_MywindoewsWebserver_disk1_1807300d52d4437cb6e5e88b82f9bfd7_externalid')]"
-                        },
-                        "deleteOption": "Delete",
-                        "diskSizeGB": 127
-                    },
-                    "dataDisks": [],
-                    "diskControllerType": "SCSI"
-                },
-                "osProfile": {
-                    "computerName": "MywindoewsWebse",
-                    "adminUsername": "hliu232admin",
-                    "windowsConfiguration": {
-                        "provisionVMAgent": true,
-                        "enableAutomaticUpdates": true,
-                        "patchSettings": {
-                            "patchMode": "AutomaticByOS",
-                            "assessmentMode": "ImageDefault",
-                            "enableHotpatching": false
+                        "createOption": "FromImage" 
                         }
-                    },
-                    "secrets": [],
-                    "allowExtensionOperations": true,
-                    "requireGuestProvisionSignal": true
-                },
-                "networkProfile": {
-                    "networkInterfaces": [
+                    }, 
+                "networkProfile": { 
+                    "networkInterfaces": [ 
                         {
-                            "id": "[parameters('networkInterfaces_mywindoewswebserver398_externalid')]",
-                            "properties": {
-                                "deleteOption": "Detach"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('vmName'), 'NIC'))]" 
+                            } 
+                        ] 
+                        } 
+                    }
+                }, 
+                { 
+                    "type": "Microsoft.Network/networkInterfaces", 
+                    "apiVersion": "2021-03-01", 
+                    "name": "[concat(parameters('vmName'), 'NIC')]", 
+                    "location": "[resourceGroup().location]", 
+                    "properties": { 
+                        "ipConfigurations": [
+                             {
+                                "name": "ipconfig1", 
+                                "properties": { 
+                                    "subnet": {
+                                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'myVnet', 'default')]" 
+                                        }, 
+                                    "privateIPAllocationMethod": "Dynamic", 
+                                    "publicIPAddress": {
+                                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', concat(parameters('vmName'), 'PublicIP'))]" 
+                                        } 
+                                    } 
                             }
-                        }
-                    ]
-                }
-            }
-        }
-    ]
+                         ]
+                     }
+                }, 
+                { 
+                    "type": "Microsoft.Network/publicIPAddresses", 
+                    "apiVersion": "2021-03-01", 
+                    "name": "[concat(parameters('vmName'), 'PublicIP')]", 
+                    "location": "[resourceGroup().location]", 
+                    "properties": { 
+                        "publicIPAllocationMethod": "Dynamic"
+                         } 
+                } 
+        ]
 }
