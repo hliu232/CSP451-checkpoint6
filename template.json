@@ -18,6 +18,25 @@
     "variables": {},
     "resources": [
         {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2021-03-01",
+            "name": "myNewNIC",
+            "location": "eastus",
+            "properties": {
+              "ipConfigurations": [
+                {
+                  "name": "ipconfig1",
+                  "properties": {
+                    "subnet": {
+                      "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'myVNet', 'mySubnet')]"
+                    },
+                    "privateIPAllocationMethod": "Dynamic"
+                  }
+                }
+              ]
+            }
+          },          
+        {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2024-07-01",
             "name": "[parameters('virtualMachines_MyVM_name')]",
@@ -70,11 +89,11 @@
                 },
                 "networkProfile": {
                     "networkInterfaces": [
-                            {
-                                "id": "[resourceId('Microsoft.Network/networkInterfaces', 'myNewNIC')]"
-                            }
+                        {
+                         "id": "[resourceId('Microsoft.Network/networkInterfaces', 'myNewNIC')]"
+                         }
                         ]
-                    }
+                }
 
                 
             }
