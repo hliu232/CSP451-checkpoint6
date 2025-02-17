@@ -1,0 +1,15 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_MywindoewsWebserver_name": {
+            "value": null
+        },
+        "disks_MywindoewsWebserver_disk1_1807300d52d4437cb6e5e88b82f9bfd7_externalid": {
+            "value": null
+        },
+        "networkInterfaces_mywindoewswebserver398_externalid": {
+            "value": null
+        }
+    }
+}
